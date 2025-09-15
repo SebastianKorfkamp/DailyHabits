@@ -5,17 +5,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.PlayArrow
-
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dailyhabits.viewmodel.HabitViewModel
+import com.example.dailyhabits.viewmodel.HabitViewModelFactory
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModelFactory: HabitViewModelFactory) {
     var selectedTab by remember { mutableStateOf(0) }
-    val viewModel: HabitViewModel = viewModel()
+    val viewModel: HabitViewModel = viewModel(factory = viewModelFactory)
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(

@@ -1,7 +1,12 @@
-package com.example.dailyhabits.model
+package com.example.dailyhabits.data
 
-data class Habit(
-    val id: Long = 0, // Room generiert automatisch IDs
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "habits")
+data class HabitEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val title: String,
     val startDate: Long = System.currentTimeMillis(),
     val streakCount: Int = 0,
