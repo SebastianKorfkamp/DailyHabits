@@ -159,26 +159,36 @@ fun HabitCard(
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                // Check/Reset Button
-                FilledTonalIconButton(
-                    onClick = {
-                        if (habit.isCompletedToday) onReset() else onComplete()
-                    },
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = if (habit.isCompletedToday)
-                            MaterialTheme.colorScheme.primaryContainer
-                        else
-                            MaterialTheme.colorScheme.secondaryContainer
-                    )
-                ) {
-                    Icon(
-                        imageVector = if (habit.isCompletedToday) Icons.Default.Check else Icons.Outlined.Check,
-                        contentDescription = if (habit.isCompletedToday) "Rückgängig" else "Erledigt",
-                        tint = if (habit.isCompletedToday)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                // Check/Reset Button - Improved visual feedback
+                if (habit.isCompletedToday) {
+                    // Completed state - show filled button with different styling
+                    FilledIconButton(
+                        onClick = onReset,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Rückgängig machen",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                } else {
+                    // Not completed state - show outlined button
+                    OutlinedIconButton(
+                        onClick = onComplete,
+                        colors = IconButtonDefaults.outlinedIconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Check,
+                            contentDescription = "Als erledigt markieren",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
 
                 // Delete Button

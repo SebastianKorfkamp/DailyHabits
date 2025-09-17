@@ -72,13 +72,14 @@ class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
             val habit = _habits.find { it.id == habitId } ?: return@launch
             val today = getTodayString()
 
+            // Nur markieren, wenn heute noch nicht erledigt
             if (!habit.isCompletedToday) {
                 // Prüfen ob gestern auch gemacht wurde für Streak
                 val yesterday = getYesterdayString()
                 val newStreakCount = if (habit.lastCompletedDay == yesterday || habit.streakCount == 0) {
                     habit.streakCount + 1
                 } else {
-                    1 // Streak zurücksetzen
+                    1 // Streak zurücksetzen, da eine Lücke da war
                 }
 
                 repository.updateHabitProgress(
@@ -96,11 +97,20 @@ class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
             val habit = _habits.find { it.id == habitId } ?: return@launch
             val today = getTodayString()
 
+            // Nur zurücksetzen, wenn heute erledigt wurde
             if (habit.isCompletedToday && habit.lastCompletedDay == today) {
+                // Bestimme den neuen lastCompletedDay
+                val yesterday = getYesterdayString()
+                val newLastCompletedDay = if (habit.streakCount > 1) {
+                    yesterday // Gestern war wahrscheinlich der letzte Tag
+                } else {
+                    "" // Komplett zurücksetzen
+                }
+
                 repository.updateHabitProgress(
                     id = habitId,
                     streakCount = maxOf(0, habit.streakCount - 1),
-                    lastCompletedDay = habit.lastCompletedDay,
+                    lastCompletedDay = newLastCompletedDay,
                     isCompletedToday = false
                 )
             }
@@ -111,12 +121,13 @@ class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
         val today = getTodayString()
         viewModelScope.launch {
             _habits.forEach { habit ->
-                if (habit.isCompletedToday != (habit.lastCompletedDay == today)) {
+                val shouldBeCompletedToday = habit.lastCompletedDay == today
+                if (habit.isCompletedToday != shouldBeCompletedToday) {
                     repository.updateHabitProgress(
                         id = habit.id,
                         streakCount = habit.streakCount,
                         lastCompletedDay = habit.lastCompletedDay,
-                        isCompletedToday = habit.lastCompletedDay == today
+                        isCompletedToday = shouldBeCompletedToday
                     )
                 }
             }
